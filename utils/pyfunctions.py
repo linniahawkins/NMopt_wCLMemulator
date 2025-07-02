@@ -184,8 +184,10 @@ def train_val_save(X_train,X_test,y_train,y_test,kernel,outfile=None,savedir=Non
 
         if (savedir):
             print('saving')
-            num_params = np.shape(X_train)[1]
-            model.predict = tf.function(model.predict_y, input_signature=[tf.TensorSpec(shape=[None, num_params], dtype=tf.float64)])
+            model.compiled_predict_f = tf.function(
+                lambda X: model.predict_f(X, full_cov=False),
+                input_signature=[tf.TensorSpec([None, np.shape(X_train)[1]], tf.float64)],
+            )
             tf.saved_model.save(model, savedir)
 
         if (outfile):
